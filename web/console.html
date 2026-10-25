@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Embargo</title>
+<link rel="stylesheet" href="/static/console.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 54 54'%3E%3Crect width='54' height='54' fill='%2305070a'/%3E%3Cg fill='white'%3E%3Crect x='6' y='8' width='42' height='8'/%3E%3Crect x='6' y='23' width='27' height='8'/%3E%3Crect x='6' y='38' width='42' height='8'/%3E%3C/g%3E%3C/svg%3E">
+</head>
+<body>
+<div class="classbar">Demo · fictional company data · everything runs on this machine</div>
+
+<!-- ============================== LOGIN ============================== -->
+<section id="login">
+  <div class="lg-stage">
+    <div class="lg-videos" id="lg-videos">
+      <video class="on" muted playsinline preload="auto" poster="/static/media/lathe_poster.jpg"><source src="/static/media/lathe.mp4" type="video/mp4"></video>
+      <video muted playsinline preload="auto" poster="/static/media/pcb_poster.jpg"><source src="/static/media/pcb.mp4" type="video/mp4"></video>
+      <video muted playsinline preload="metadata" poster="/static/media/sparks_poster.jpg"><source src="/static/media/sparks.mp4" type="video/mp4"></video>
+      <video muted playsinline preload="metadata" poster="/static/media/drone_poster.jpg"><source src="/static/media/drone.mp4" type="video/mp4"></video>
+      <video muted playsinline preload="metadata" poster="/static/media/servers_poster.jpg"><source src="/static/media/servers.mp4" type="video/mp4"></video>
+    </div>
+    <div class="lg-shade"></div>
+
+    <header class="lg-top">
+      <div class="brandmark"><svg class="logo" viewBox="0 0 54 54" aria-hidden="true"><rect x="4" y="6" width="46" height="8"/><rect x="4" y="23" width="30" height="8"/><rect x="40" y="23" width="10" height="8" opacity=".28"/><rect x="4" y="40" width="46" height="8"/></svg><span>EMBARGO</span></div>
+      <div class="lg-badge"><span class="dot ok"></span>On-device · works with the wifi off</div>
+    </header>
+
+    <div class="lg-hero">
+      <div class="eyebrow">Confidential files, checked on your own machine</div>
+      <h1>Keeps <span class="rot" aria-live="polite"><span class="rot-track" id="rot-track"><span>weapons blueprints</span><span>chip designs</span><span>trade secrets</span><span>flight software</span><span>government files</span><span>weapons blueprints</span></span></span></span></span><br>inside the building.</h1>
+      <p>A local AI officer that stops controlled files from leaving your company, even when someone crops the label off first. Nothing is ever sent to the cloud.</p>
+      <ul class="ticks">
+        <li>Recognises the file itself, not just its label</li>
+        <li>Checks who it's going to</li>
+        <li>A second person signs off, never the sender</li>
+      </ul>
+      <p class="wont">It never sends, deletes or approves anything on its own. It holds, and a person decides.</p>
+    </div>
+
+    <footer class="lg-foot"><span>Runs on a Dell Pro Max with NVIDIA GB10</span><span>Demo with a fictional company</span><span id="lg-credit">Footage: Pexels</span></footer>
+  </div>
+
+  <aside class="lg-side">
+    <form class="lg-form" id="login-form" autocomplete="off">
+      <div class="label">Secure sign-in</div>
+      <h2>Kestrel Precision</h2>
+      <p class="sub">Compliance console</p>
+      <label class="label" for="lg-user">Work email</label>
+      <div class="field"><input id="lg-user" spellcheck="false" placeholder="you@kestrelprecision"></div>
+      <label class="label" for="lg-pass">Password</label>
+      <div class="field"><input id="lg-pass" type="password" placeholder="••••••••••"></div>
+      <button class="btn primary wide big" id="lg-go" type="submit"><span>Sign in</span></button>
+      <div class="login-steps" id="lg-steps"></div>
+      <p class="hintline">Demo account: just press Sign in.</p>
+    </form>
+    <div class="lg-side-foot">
+      <div><span class="dot ok"></span>Identity checked on this machine</div>
+      <div><span class="dot ok"></span>No data leaves the building</div>
+    </div>
+  </aside>
+</section>
+
+<!-- ============================== APP ============================== -->
+<section id="app" class="hidden">
+  <header class="topbar">
+    <a class="home-link" id="home-link" href="#" title="Back to the sign-in page"><svg class="logo" viewBox="0 0 54 54" aria-hidden="true"><rect x="4" y="6" width="46" height="8"/><rect x="4" y="23" width="30" height="8"/><rect x="40" y="23" width="10" height="8" opacity=".28"/><rect x="4" y="40" width="46" height="8"/></svg><span>EMBARGO</span></a>
+    <div class="crumbs" id="crumb">Kestrel Precision · Gate</div>
+    <div class="chips">
+      <span class="chip" id="c-model"><i class="dot"></i><b>AI MODEL</b><em>…</em></span>
+      <span class="chip" id="c-egress"><i class="dot"></i><b>INTERNET</b><em>not tested</em></span>
+      <span class="chip" id="c-chain"><i class="dot"></i><b>AUDIT LOG</b><em>…</em></span>
+      <span class="chip" id="c-gpu"><i class="dot ok"></i><b>LOAD</b><em>…</em></span>
+    </div>
+    <button class="btn-demo" id="demo-btn"><span class="rec"></span>DEMO MODE</button>
+    <div class="user"><span id="who">Dana Whitfield · Empowered Official</span><button class="iconbtn" id="reset" title="Reset demo data" aria-label="Reset demo data"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5"/></svg></button><button class="btn" id="logout" title="Sign out and return to the sign-in page"><svg viewBox="0 0 24 24"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg>Sign out</button></div>
+  </header>
+
+  <nav class="rail">
+    <button data-view="map" class="on" title="Perimeter map"><svg viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 6 L12 12 L7 18 M12 12 H17 M12 3 V21" /></svg><span>MAP</span></button>
+    <button data-view="mail" title="Outgoing mail"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 6l9 7 9-7"/></svg><span>MAIL</span></button>
+    <button data-view="gate" title="Outgoing gate"><svg viewBox="0 0 24 24"><path d="M4 20V4h16v16M4 12h16M12 4v16"/></svg><span>GATE</span></button>
+    <button data-view="sweep" title="Night sweep"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 12 L18 6"/></svg><span>SWEEP</span></button>
+    <button data-view="audit" title="Audit log"><svg viewBox="0 0 24 24"><rect x="2" y="9" width="6" height="6"/><rect x="9" y="9" width="6" height="6"/><rect x="16" y="9" width="6" height="6"/></svg><span>LOG</span></button>
+    <button data-view="machine" title="The machine"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16"/><path d="M9 9h6v6H9zM4 9H1M4 15H1M23 9h-3M23 15h-3M9 4V1M15 4V1M9 23v-3M15 23v-3"/></svg><span>MACHINE</span></button>
+    <button data-view="how" title="How it works"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17.2v.1"/></svg><span>HOW</span></button>
+  </nav>
+
+  <main>
+    <!-- ======== PERIMETER MAP ======== -->
+    <div class="view map-view" id="v-map">
+      <div class="map-head">
+        <div class="mh-title">
+          <div class="eyebrow">Perimeter · live</div>
+          <h2>Everything trying to leave Kestrel Precision</h2>
+        </div>
+        <div class="mh-status" id="mp-status-wrap"><span class="dot" id="mp-dot"></span><span id="mp-sim-status">Idle · press Simulate a workday</span></div>
+        <div class="row">
+          <button class="btn" id="mp-sweep">Run night sweep</button>
+          <button class="btn primary" id="mp-sim">Simulate a workday</button>
+        </div>
+      </div>
+      <div class="map-shell">
+        <aside class="map-side side-left" aria-label="Map summary">
+          <section class="ms-sec">
+            <div class="ms-h"><span>Attempts to leave</span></div>
+            <div class="mstats" id="mp-stats"></div>
+          </section>
+          <section class="ms-sec">
+            <div class="ms-h"><span>Ways out</span><em><b class="t-b">blocked</b> · <b class="t-h">held</b> · <b class="t-r">out</b></em></div>
+            <div class="chans" id="mp-chans"></div>
+          </section>
+          <section class="ms-sec grow">
+            <div class="ms-h"><span>Exposed folders</span><em id="mp-exp-n"></em></div>
+            <div class="ms-scroll" id="mp-exposed"></div>
+          </section>
+        </aside>
+
+        <div class="panel map-panel">
+          <div class="map-bar">
+            <div class="mfilters" id="mp-filters" role="group" aria-label="Show flows">
+              <button type="button" class="on" data-st="BLOCK" aria-pressed="true" title="Show or hide files blocked at the wall"><i class="sw b"></i>Blocked</button>
+              <button type="button" class="on" data-st="HOLD" aria-pressed="true" title="Show or hide files held for sign-off"><i class="sw h"></i>Held</button>
+              <button type="button" class="on" data-st="RELEASE" aria-pressed="true" title="Show or hide files released outside"><i class="sw r"></i>Released</button>
+            </div>
+            <div class="mkey"><span><i class="sw ring"></i>Foreign person</span><span><i class="sw exp"></i>Exposed folder</span><span><i class="sw root"></i>Who can open what</span></div>
+          </div>
+          <div class="map-canvas" id="map-wrap"><svg id="map" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Perimeter map: people, shared folders, ways out and outside companies"></svg>
+          <div class="ask-drawer" id="ask-drawer" aria-hidden="true">
+            <div class="ask-dh"><span class="label">Ask Embargo · answers come from the log</span><button type="button" class="xbtn" id="ask-close" aria-label="Close answers"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+            <div class="ask-out" id="ask-out"></div>
+            <div class="ask-chips" id="ask-chips"></div>
+          </div></div>
+          <form id="ask-form" class="ask-bar" autocomplete="off">
+            <svg class="ask-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>
+            <input id="ask-q" placeholder="Ask Embargo, e.g. what got blocked today?" aria-label="Ask Embargo">
+            <button class="btn primary" type="submit">Ask</button>
+          </form>
+        </div>
+
+        <aside class="panel map-side side-right feed-panel" aria-label="Live feed">
+          <div class="panel-h"><span class="label">Live feed</span><span class="hint" id="mp-feed-n">newest first</span></div>
+          <div class="feed" id="mp-feed"></div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ======== MAIL ======== -->
+    <div class="view hidden" id="v-mail">
+      <div class="view-head">
+        <div>
+          <div class="eyebrow">Outgoing mail · real SMTP server on this machine</div>
+          <h2>Embargo is the company's mail server.</h2>
+          <p>Write an email like normal. Before it leaves, every attachment is checked. Blocked mail is refused by the server itself, like a corporate mail filter.</p>
+        </div>
+      </div>
+      <div class="mail-grid">
+        <form class="compose" id="mail-form" autocomplete="off">
+          <div class="compose-bar"><i></i><i></i><i></i><span>New message</span></div>
+          <div class="mrow"><label for="ml-from">From</label><select id="ml-from"></select></div>
+          <div class="mrow"><label for="ml-to">To</label><select id="ml-to"></select></div>
+          <div class="mrow"><label for="ml-subj">Subject</label><input id="ml-subj" value="Drawing for your quote"></div>
+          <textarea id="ml-body">Hi, please find the drawing attached for your quote. Thanks!</textarea>
+          <div class="attach">
+            <div class="att-thumb" id="ml-thumb"></div>
+            <div class="att-pick"><label class="label" for="ml-att">Attachment</label><select id="ml-att"></select></div>
+          </div>
+          <div class="compose-foot"><button class="btn primary big" id="ml-send" type="submit">Send</button><span class="hint">via smtp://127.0.0.1:2525</span></div>
+        </form>
+        <div class="panel smtp">
+          <div class="panel-h"><span class="label">Mail server conversation</span><span class="hint">what actually happened on the wire</span></div>
+          <div class="smtp-log" id="ml-log"><div class="dim">Press Send. Every line the mail client and the server exchange shows up here.</div></div>
+          <div class="smtp-result" id="ml-result"></div>
+        </div>
+      </div>
+      <div class="mail-under">
+        <div class="panel">
+          <div class="panel-h"><span class="label">Outside mailboxes</span><span class="hint">what actually arrived</span></div>
+          <div class="boxes" id="ml-boxes"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><span class="label">Works with any mail client</span></div>
+          <p class="small muted">Point Outlook, Thunderbird or a script at <span class="mono">127.0.0.1:2525</span>. Or from a terminal:</p>
+          <pre class="term small" id="ml-curl">curl smtp://127.0.0.1:2525 \
+  --mail-from marco.bellini@kestrelprecision.example \
+  --mail-rcpt hans.weber@mueller-praezision.example \
+  --upload-file drawing.eml</pre>
+          <p class="small dim" style="margin-top:.6rem">A blocked message gets <span class="mono">550 5.7.1</span>, a held one is kept until an Empowered Official signs off, then delivered.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== GATE ======== -->
+    <div class="view hidden" id="v-gate">
+      <div class="view-head">
+        <div>
+          <div class="eyebrow">Outgoing gate</div>
+          <h2>Every file is checked before it leaves.</h2>
+          <p>Pick a file and who it's going to. The six checks run on this machine in under a second.</p>
+        </div>
+        <div class="kpis" id="g-kpis"></div>
+      </div>
+
+      <div class="gate-grid">
+        <div class="panel req">
+          <div class="panel-h"><span class="label">Send a file</span></div>
+          <label class="label" for="g-sample">File</label>
+          <select id="g-sample"></select>
+          <label class="label" for="g-from">From</label>
+          <select id="g-from"></select>
+          <label class="label" for="g-to">To</label>
+          <select id="g-to"></select>
+          <button class="btn primary wide" id="g-send">Check &amp; send</button>
+          <button class="btn wide" id="g-batch">Run all 15 sneak attempts</button>
+          <div class="inbox">
+            <div class="label">Waiting to be checked</div>
+            <div class="paper-stack" id="g-stack"></div>
+          </div>
+        </div>
+
+        <div class="panel lane">
+          <div class="panel-h"><span class="label">Inspection</span><span class="hint" id="lane-status">idle</span></div>
+          <div class="lane-body">
+            <div class="bed" id="bed"></div>
+            <ol class="stages" id="stages">
+              <li data-s="ingest"><i></i><b>Open the file</b><span>PDF, scan or photo</span><em></em></li>
+              <li data-s="fp"><i></i><b>Is it a copy of a controlled drawing?</b><span>compared with 60 marked originals · no AI</span><em></em></li>
+              <li data-s="read"><i></i><b>What does it say?</b><span>text layer, or the local vision model</span><em></em></li>
+              <li data-s="ledger"><i></i><b>How sure are we?</b><span>evidence adds up to a probability</span><em></em></li>
+              <li data-s="rules"><i></i><b>Who is it going to?</b><span>license · country · clearance</span><em></em></li>
+              <li data-s="decision"><i></i><b>Decision</b><span>written to the tamper-proof log</span><em></em></li>
+            </ol>
+          </div>
+          <div class="tray-wrap">
+            <div class="label">Checked</div>
+            <div class="tray" id="tray"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel evidence" id="evidence">
+        <div class="ev-empty">Why each decision was made appears here.</div>
+      </div>
+    </div>
+
+    <!-- ======== SWEEP ======== -->
+    <div class="view hidden" id="v-sweep">
+      <div class="view-head">
+        <div>
+          <div class="eyebrow">Night sweep</div>
+          <h2>Every night it reads every file on the company share.</h2>
+          <p>It finds controlled drawings in folders where the wrong people can open them.</p>
+        </div>
+        <div class="row">
+          <input id="s-limit" type="number" placeholder="all files" class="mini">
+          <button class="btn primary" id="s-run">Run sweep now</button>
+        </div>
+      </div>
+      <div class="stats" id="s-stats"></div>
+      <div class="sweep-grid">
+        <div class="panel">
+          <div class="panel-h"><span class="label">Every file on the share</span><span class="hint" id="s-prog">—</span></div>
+          <div class="wall" id="wall"></div>
+          <div class="legend"><span><i class="lg c0"></i>not read yet</span><span><i class="lg c1"></i>not controlled</span><span><i class="lg c2"></i>controlled, filed correctly</span><span><i class="lg c3"></i>controlled and exposed</span></div>
+        </div>
+        <div class="panel log-panel">
+          <div class="panel-h"><span class="label">Live log</span><span class="hint">on this machine</span></div>
+          <div class="log" id="s-log"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><span class="label">Fix these first</span><span class="hint">exposure = probability × how many wrong people can open it</span></div>
+        <div class="tscroll" id="s-top"></div>
+      </div>
+    </div>
+
+    <!-- ======== AUDIT ======== -->
+    <div class="view hidden" id="v-audit">
+      <div class="view-head">
+        <div>
+          <div class="eyebrow">Tamper-proof log</div>
+          <h2>Each record is sealed to the one before it.</h2>
+          <p>If anyone edits an old record, the seal breaks from that point on, and we can show exactly where.</p>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="a-verify">Check the seal</button>
+          <button class="btn danger" id="a-tamper">Simulate an insider edit</button>
+        </div>
+      </div>
+      <div class="formula">seal(n) = SHA-256( seal(n−1) + record(n) )</div>
+      <div class="panel"><div class="panel-h"><span class="label">The chain</span><span class="hint">oldest left · newest right</span></div><div class="chain" id="chain"></div><div id="a-msg"></div></div>
+      <div class="panel" style="margin-top:1rem"><div class="panel-h"><span class="label">Records</span><span class="hint">newest first · last 30</span></div><div class="tscroll" id="a-rows"></div></div>
+    </div>
+
+    <!-- ======== MACHINE ======== -->
+    <div class="view hidden" id="v-machine">
+      <div class="view-head">
+        <div>
+          <div class="eyebrow">The machine</div>
+          <h2>One box. No cloud. No way out.</h2>
+          <p>All AI runs on this Dell Pro Max with NVIDIA GB10. The software sits in a sandbox that can't reach the internet.</p>
+        </div>
+      </div>
+      <div class="gauges" id="gauges"></div>
+      <div class="machine-grid">
+        <div class="panel"><div class="panel-h"><span class="label">Load, last 2 minutes</span></div><canvas id="m-chart" width="1400" height="320"></canvas>
+          <div class="legend"><span><i class="lg gpu"></i>GPU</span><span><i class="lg cpu"></i>CPU</span><span><i class="lg ram"></i>memory</span></div></div>
+        <div class="panel">
+          <div class="panel-h"><span class="label">Can it reach the internet?</span></div>
+          <p class="small muted">Inside the OpenShell sandbox, everything outbound is blocked except Slack.</p>
+          <button class="btn primary" id="m-egress" style="margin-top:.7rem">Try to reach the internet</button>
+          <pre class="term" id="m-term">$ _</pre>
+          <div class="panel-h" style="margin-top:1.1rem"><span class="label">AI model</span></div>
+          <div class="kv" id="m-model"></div>
+        </div>
+      </div>
+    </div>
+    <div class="view hidden how-view" id="v-how">
+      <div class="how-progress"><i id="how-prog"></i></div>
+      <header class="how-hero">
+        <div class="eyebrow">How it works</div>
+        <h2>The AI reads the drawing.<br><span class="grad">Plain code decides if it can leave.</span></h2>
+        <p>Twelve steps, all on one Dell Pro Max with GB10. Scroll, or let it walk you through.</p>
+        <div class="how-hero-row">
+          <button class="btn primary" id="how-play">Walk me through it</button>
+          <div class="how-stats">
+            <div><b>0</b><span>leaks in testing</span></div>
+            <div><b>22/22</b><span>acceptance checks</span></div>
+            <div><b>0</b><span>cloud calls</span></div>
+          </div>
+        </div>
+      </header>
+      <div class="panel how-arch" id="how-arch"></div>
+      <div class="how-body">
+        <nav class="how-index" id="how-index"></nav>
+        <div class="how-steps" id="how-steps"></div>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- ============================== DEMO THEATER ============================== -->
+<section id="theater" class="hidden">
+  <div class="th-top">
+    <div class="brandmark small"><svg class="logo" viewBox="0 0 54 54" aria-hidden="true"><rect x="4" y="6" width="46" height="8"/><rect x="4" y="23" width="30" height="8"/><rect x="40" y="23" width="10" height="8" opacity=".28"/><rect x="4" y="40" width="46" height="8"/></svg><span>EMBARGO</span></div>
+    <div class="live"><span class="rec"></span>LIVE · NIGHT SWEEP · ON THIS MACHINE</div>
+    <div id="th-clock">00:00</div>
+    <button class="btn" id="th-close">Exit (Esc)</button>
+  </div>
+  <div class="th-body">
+    <div class="th-left">
+      <div class="th-stage" id="th-stage"><div class="th-doc" id="th-doc"></div></div>
+      <div class="th-meta" id="th-meta"></div>
+      <div class="film" id="film"></div>
+    </div>
+    <div class="th-right">
+      <div class="th-counters" id="th-counters"></div>
+      <div class="th-charts">
+        <div class="spark"><div><b>GPU</b><span id="sp-gpu-v">—</span></div><canvas id="sp-gpu" width="520" height="90"></canvas></div>
+        <div class="spark"><div><b>CPU</b><span id="sp-cpu-v">—</span></div><canvas id="sp-cpu" width="520" height="90"></canvas></div>
+        <div class="spark"><div><b>Memory</b><span id="sp-ram-v">—</span></div><canvas id="sp-ram" width="520" height="90"></canvas></div>
+        <div class="spark"><div><b>Files per second</b><span id="sp-fps-v">—</span></div><canvas id="sp-fps" width="520" height="90"></canvas></div>
+      </div>
+      <div class="th-log" id="th-log"></div>
+    </div>
+  </div>
+  <div class="th-summary hidden" id="th-summary"></div>
+</section>
+
+<script src="/static/console.js"></script>
+</body>
+</html>

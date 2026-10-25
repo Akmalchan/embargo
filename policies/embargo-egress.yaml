@@ -1,0 +1,28 @@
+# OpenShell egress for the Embargo sandbox: deny everything, allow Slack only.
+#
+# Apply (hot reload, no rebuild):
+#   nemoclaw my-assistant policy-add --from-file policies/embargo-egress.yaml --yes
+# Watch decisions live:
+#   openshell logs my-assistant --tail
+#
+# [verify on the box] The preset schema below follows the nemoclaw-applications playbook
+# examples. If policy-add rejects it, run `openshell policy get --full`, copy the shape of an
+# existing network entry, and keep exactly these hosts. Nothing else should be allowed:
+# no model APIs, no telemetry, no package mirrors at demo time.
+network_policies:
+  slack:
+    name: slack
+    endpoints:
+      - host: slack.com
+        port: 443
+      - host: api.slack.com
+        port: 443
+      - host: wss-primary.slack.com
+        port: 443
+      - host: wss-backup.slack.com
+        port: 443
+      - host: files.slack.com
+        port: 443
+    binaries:
+      - path: /usr/bin/python3*
+      - path: /usr/local/bin/node

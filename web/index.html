@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Embargo</title>
+<style>
+:root{
+  --bg:#f3f4f6; --panel:#ffffff; --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --navy:#0f1f3a;
+  --red:#b42318; --red-bg:#fef3f2; --amber:#b54708; --amber-bg:#fffaeb; --green:#067647; --green-bg:#ecfdf3;
+  --blue:#1d4ed8; --blue-bg:#eff6ff; --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif}
+header{background:var(--navy);color:#fff;padding:12px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;letter-spacing:.3px}
+header .tag{color:#9fb3d1;font-size:12px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.pill{font-size:12px;padding:4px 10px;border-radius:999px;background:#1c3157;color:#dbe6f7;white-space:nowrap}
+.pill.ok{background:#0f5132;color:#d1fadf}.pill.bad{background:#7a271a;color:#fee4e2}
+nav{display:flex;gap:4px;padding:0 20px;background:#fff;border-bottom:1px solid var(--line)}
+nav button{border:0;background:none;padding:12px 14px;font-size:14px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+nav button.on{color:var(--ink);border-color:var(--navy);font-weight:600}
+main{padding:16px 20px;max-width:1500px;margin:0 auto}
+.grid{display:grid;grid-template-columns:360px 1fr;gap:16px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 10px}
+label{display:block;font-size:12px;color:var(--muted);margin:8px 0 3px}
+select,input[type=text],input[type=number],input[type=file]{width:100%;padding:7px 8px;border:1px solid #d0d5dd;border-radius:6px;font:inherit;background:#fff}
+button.btn{padding:8px 14px;border-radius:6px;border:1px solid #d0d5dd;background:#fff;font:inherit;cursor:pointer}
+button.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+button.danger{background:var(--red);color:#fff;border-color:var(--red)}
+button.go{background:var(--green);color:#fff;border-color:var(--green)}
+button:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.list{max-height:420px;overflow:auto;margin-top:8px}
+.item{padding:8px;border-radius:6px;cursor:pointer;border:1px solid transparent;display:flex;gap:8px;align-items:center}
+.item:hover{background:#f9fafb}.item.sel{border-color:#c7d2fe;background:var(--blue-bg)}
+.chip{font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.4px}
+.c-BLOCK,.c-DENIED{background:var(--red-bg);color:var(--red)}
+.c-HOLD{background:var(--amber-bg);color:var(--amber)}
+.c-RELEASE,.c-APPROVED{background:var(--green-bg);color:var(--green)}
+.small{font-size:12px;color:var(--muted)}
+.mono{font-family:var(--mono);font-size:12px}
+.banner{border-radius:8px;padding:14px 16px;margin-bottom:12px}
+.banner.BLOCK{background:var(--red-bg);border:1px solid #fecdca}
+.banner.HOLD{background:var(--amber-bg);border:1px solid #fedf89}
+.banner.RELEASE,.banner.APPROVED{background:var(--green-bg);border:1px solid #abefc6}
+.banner.DENIED{background:var(--red-bg);border:1px solid #fecdca}
+.banner .big{font-size:24px;font-weight:800;letter-spacing:.5px}
+.banner.BLOCK .big,.banner.DENIED .big{color:var(--red)}.banner.HOLD .big{color:var(--amber)}.banner.RELEASE .big,.banner.APPROVED .big{color:var(--green)}
+.pbar{position:relative;height:12px;border-radius:6px;background:linear-gradient(90deg,#d1fadf 0 50%,#fef0c7 50% 90%,#fee4e2 90%);margin:6px 0 2px}
+.pbar .mark{position:absolute;top:-4px;width:3px;height:20px;background:var(--ink);border-radius:2px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}
+.wbar{display:inline-block;height:10px;border-radius:3px;vertical-align:middle}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:1100px){.cols{grid-template-columns:1fr}}
+.quote{font-family:var(--mono);font-size:12px;background:#f9fafb;border-left:3px solid #c7d2fe;padding:4px 8px;margin:4px 0;word-break:break-word}
+.quote.dropped{border-color:#fda29b;text-decoration:line-through;color:#98a2b3}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.tile{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.tile .n{font-size:24px;font-weight:800}.tile .l{font-size:12px;color:var(--muted)}
+.prog{height:8px;background:#eaecf0;border-radius:4px;overflow:hidden}.prog>div{height:100%;background:var(--navy);width:0}
+.msg{padding:10px 12px;border-radius:6px;margin-top:8px;font-weight:600}
+.msg.bad{background:var(--red-bg);color:var(--red)}.msg.ok{background:var(--green-bg);color:var(--green)}
+img.match{width:100%;border:1px solid var(--line);border-radius:6px;margin-top:6px}
+tr.broken td{background:var(--red-bg)}
+canvas{width:100%;height:120px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Embargo</h1><div class="tag">Kestrel Precision · export-control checks, on this machine only</div></div>
+  <div class="pills">
+    <span class="pill" id="p-model">model …</span>
+    <span class="pill" id="p-egress">egress not tested</span>
+    <span class="pill" id="p-chain">log …</span>
+    <span class="pill" id="p-meter">meter …</span>
+  </div>
+</header>
+<nav>
+  <button class="on" data-tab="gate">Gate</button>
+  <button data-tab="sweep">Night sweep</button>
+  <button data-tab="audit">Audit log</button>
+  <button data-tab="system">Machine</button>
+</nav>
+<main>
+
+<!-- GATE -->
+<section id="tab-gate">
+<div class="grid">
+  <div>
+    <div class="panel">
+      <h2>Send a file</h2>
+      <label>Test file</label>
+      <select id="sample"></select>
+      <label>or upload</label>
+      <input type="file" id="upload">
+      <label>From (staff)</label>
+      <select id="requester"></select>
+      <label>To</label>
+      <select id="recipient"></select>
+      <div class="row" style="margin-top:12px"><button class="btn primary" id="send">Check and send</button><span class="small" id="sending"></span></div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h2>Requests</h2>
+      <div class="list" id="reqs"></div>
+    </div>
+  </div>
+  <div class="panel" id="card"><div class="small">Pick a test file and press Check and send.</div></div>
+</div>
+</section>
+
+<!-- SWEEP -->
+<section id="tab-sweep" class="hidden">
+  <div class="panel">
+    <div class="row">
+      <h2 style="margin:0">Night sweep · file share</h2>
+      <span class="small" style="margin-left:auto">limit</span>
+      <input type="number" id="sw-limit" style="width:90px" placeholder="all">
+      <label class="small" style="margin:0"><input type="checkbox" id="sw-fresh"> no cache</label>
+      <button class="btn primary" id="sw-run">Run sweep now</button>
+    </div>
+    <div style="margin-top:10px" class="prog"><div id="sw-bar"></div></div>
+    <div class="small" id="sw-status" style="margin-top:6px"></div>
+  </div>
+  <div class="tiles" id="sw-tiles" style="margin-top:16px"></div>
+  <div class="panel">
+    <h2>Top exposures</h2>
+    <table><thead><tr><th>File</th><th>Folder</th><th>Control</th><th>Problem</th><th>Exposure</th><th></th></tr></thead>
+    <tbody id="sw-top"></tbody></table>
+  </div>
+</section>
+
+<!-- AUDIT -->
+<section id="tab-audit" class="hidden">
+  <div class="panel">
+    <div class="row">
+      <h2 style="margin:0">Tamper-proof log · h<sub>n</sub> = SHA-256(h<sub>n-1</sub> ‖ event<sub>n</sub>)</h2>
+      <button class="btn primary" id="au-verify" style="margin-left:auto">Verify chain</button>
+      <button class="btn danger" id="au-tamper">Demo: edit an old row</button>
+    </div>
+    <div id="au-msg"></div>
+    <table style="margin-top:10px"><thead><tr><th>#</th><th>Time</th><th>Event</th><th>Who</th><th>Ref</th><th>Detail</th><th>Hash</th></tr></thead>
+    <tbody id="au-rows"></tbody></table>
+  </div>
+</section>
+
+<!-- SYSTEM -->
+<section id="tab-system" class="hidden">
+  <div class="cols">
+    <div class="panel">
+      <h2>Machine</h2>
+      <div class="tiles" id="sy-tiles"></div>
+      <canvas id="sy-chart" width="800" height="160"></canvas>
+      <div class="small">CPU and GPU use over the last minutes · memory is unified on the GB10</div>
+    </div>
+    <div class="panel">
+      <h2>Egress proof</h2>
+      <p class="small">Embargo runs inside an OpenShell sandbox that denies all outbound traffic except Slack. This button asks the sandbox to reach the internet.</p>
+      <button class="btn primary" id="sy-egress">Try to reach example.com</button>
+      <div id="sy-egress-msg"></div>
+      <h2 style="margin-top:18px">Model</h2>
+      <div id="sy-model" class="mono"></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const api = async (path, opts={}) => { const r = await fetch(path, opts); if(!r.ok) throw new Error(await r.text()); return r.json(); };
+const post = (path, body) => api(path, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+let staff = [], recipients = [], current = null, samples = [];
+
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x===b));
+  ["gate","sweep","audit","system"].forEach(t => $("#tab-"+t).classList.toggle("hidden", t!==b.dataset.tab));
+  if(b.dataset.tab==="audit") loadAudit();
+  if(b.dataset.tab==="sweep") loadSweep();
+});
+
+async function init(){
+  const ppl = await api("/api/people");
+  staff = ppl.staff; recipients = ppl.recipients;
+  $("#requester").innerHTML = staff.map(p => `<option value="${p.email}">${esc(p.name)} · ${p.role}${p.us_person?"":" · foreign person"}</option>`).join("");
+  $("#recipient").innerHTML = `<optgroup label="Outside">` + recipients.map(r => `<option value="${r.email}">${esc(r.company)} (${r.country}) · ${esc(r.name)}</option>`).join("") +
+    `</optgroup><optgroup label="Internal">` + staff.map(p => `<option value="${p.email}">${esc(p.name)} (staff)</option>`).join("") + `</optgroup>`;
+  samples = await api("/api/samples");
+  $("#sample").innerHTML = `<option value="">(choose)</option>` + samples.map((s,i) =>
+    `<option value="${i}">${s.set==="attack"?"[attack] ":""}${esc(s.path.split("/").pop())} · ${s.variant}${s.note?" · "+esc(s.note):""}</option>`).join("");
+  $("#sample").onchange = () => { const s = samples[$("#sample").value]; if(!s) return; $("#requester").value = s.requester; $("#recipient").value = s.recipient; };
+  await loadReqs(); tick(); setInterval(tick, 3000);
+  const h = location.hash.slice(1);
+  if(h.startsWith("EG-")) show(h);
+  else if(["sweep","audit","system"].includes(h)) document.querySelector(`nav button[data-tab=${h}]`).click();
+}
+
+$("#send").onclick = async () => {
+  $("#send").disabled = true; $("#sending").textContent = "checking on this machine…";
+  try{
+    let card;
+    const f = $("#upload").files[0];
+    if(f){
+      const fd = new FormData(); fd.append("file", f); fd.append("requester", $("#requester").value); fd.append("recipient", $("#recipient").value);
+      card = await api("/api/check", {method:"POST", body:fd});
+    } else {
+      const s = samples[$("#sample").value]; if(!s) throw new Error("pick a test file or upload one");
+      card = await post("/api/check_path", {path:s.path, requester:$("#requester").value, recipient:$("#recipient").value});
+    }
+    $("#sending").textContent = `${card.timings.total_ms} ms`;
+    await loadReqs(); show(card.id);
+  }catch(e){ $("#sending").textContent = e.message.slice(0,140); }
+  $("#send").disabled = false;
+};
+
+async function loadReqs(){
+  const rs = await api("/api/requests");
+  $("#reqs").innerHTML = rs.map(r => `<div class="item ${current===r.id?"sel":""}" data-id="${r.id}">
+     <span class="chip c-${r.status}">${r.status}</span>
+     <div style="min-width:0"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.file)}</div>
+     <div class="small">${r.id} · ${esc(r.recipient.split("@")[1]||r.recipient)} · p=${(+r.p).toFixed(3)}</div></div></div>`).join("") || `<div class="small">none yet</div>`;
+  document.querySelectorAll("#reqs .item").forEach(el => el.onclick = () => show(el.dataset.id));
+}
+
+async function show(id){
+  current = id; loadReqs(); history.replaceState(null, "", "#"+id);
+  const r = await api("/api/requests/"+id);
+  const c = r.card, status = r.status;
+  const maxw = Math.max(1, ...c.ledger.map(e => Math.abs(e.weight)));
+  const fp = c.fingerprint, best = fp.best;
+  const act = ["APPROVED","DENIED"].includes(status) ? status : c.action;
+  $("#card").innerHTML = `
+   <div class="banner ${act}">
+     <div class="row"><span class="big">${act}</span><span class="small">${c.id} · ${esc(c.file)}</span></div>
+     <div style="margin-top:4px">${esc(c.summary)}</div>
+     ${c.approver?`<div class="small" style="margin-top:4px">decided by ${esc(c.approver.name)}</div>`:""}
+   </div>
+   <div class="cols">
+    <div>
+     <div class="small">Likelihood this is export-controlled</div>
+     <div class="pbar"><div class="mark" style="left:calc(${(c.p*100).toFixed(1)}% - 1px)"></div></div>
+     <div class="row small"><span>clear &lt; 0.50</span><span style="margin-left:auto">hold</span><span style="margin-left:auto">controlled ≥ 0.90</span></div>
+     <div style="margin:8px 0"><b style="font-size:20px">p = ${c.p.toFixed(4)}</b> <span class="small">logit ${c.logit} = logit(0.15) + Σ ln LR</span></div>
+     <div><b>${c.jurisdiction}</b> ${esc(c.classification)} ${c.program?"· program "+esc(c.program):""}</div>
+     <div class="small" style="margin-top:6px">From ${esc(c.requester.name)} (${c.requester.role}) to ${esc(c.recipient.name)}, ${esc(c.recipient.company)} (${c.recipient.country}, ${c.recipient.us_person===null?"unknown":c.recipient.us_person?"US person":"foreign person"})</div>
+     <h2 style="margin-top:14px">Rules applied</h2>
+     ${c.codes.map((k,i)=>`<div class="mono">${esc(k)}</div><div class="small" style="margin-bottom:6px">${esc(c.reasons[i]||"")}</div>`).join("")}
+     ${status==="HOLD"?`<h2 style="margin-top:14px">Second person approval</h2>
+       <label>Acting as</label><select id="appr">${staff.map(p=>`<option value="${p.email}" ${p.email===c.requester.email?"selected":""}>${esc(p.name)} · ${p.role}</option>`).join("")}</select>
+       <div class="row" style="margin-top:8px"><button class="btn go" id="ap-yes">Approve release</button><button class="btn danger" id="ap-no">Deny</button></div>
+       <div id="ap-msg"></div>`:""}
+     ${status==="BLOCK"?`<div class="msg bad">Blocked by rule. No one can approve this without a license on file.</div>`:""}
+    </div>
+    <div>
+     <h2>Evidence ledger</h2>
+     <table><tbody>${c.ledger.map(e=>`<tr><td style="width:46%">${esc(e.label)}<div class="small">${esc(e.detail)}</div></td>
+       <td style="width:20%"><span class="wbar" style="width:${Math.round(60*Math.abs(e.weight)/maxw)}px;background:${e.weight>0?"#d92d20":"#12b76a"}"></span></td>
+       <td class="mono">${e.weight>0?"+":""}${e.weight.toFixed(2)}<div class="small">LR ${e.lr}</div></td></tr>`).join("") || `<tr><td class="small">no evidence either way</td></tr>`}</tbody></table>
+    </div>
+   </div>
+   <div class="cols" style="margin-top:14px">
+    <div>
+     <h2>Drawing fingerprint · no AI</h2>
+     ${best?`<div><b>${fp.strength}</b> match to vault original <b>${esc(best.part_number)}</b> (${best.jurisdiction}) · ${best.inliers} matching points · score ${best.score} · pHash ${best.phash_distance} · ${fp.ms} ms · ${fp.mode==="frame"?"frame found, labels masked":"no frame: whole image"}</div>
+       ${fp.strength!=="none"?`<img class="match" src="/api/requests/${c.id}/match.png" alt="matching points between this file and the vault original">`:""}`:`<div class="small">no vault match</div>`}
+    </div>
+    <div>
+     <h2>Reading · no quote, no claim</h2>
+     <div class="small">source: <b>${esc(c.reading.source)}</b> · model calls ${c.reading.model_calls} · tiles ${c.reading.tiles} ${c.reading.error?"· "+esc(c.reading.error):""}</div>
+     ${c.reading.clues.map(q=>`<div class="quote"><b>${esc(q.field)}</b> ${esc(q.value)} <span class="small">[${q.source}]</span><br>"${esc(q.quote)}"</div>`).join("") || `<div class="small">no export-relevant text found</div>`}
+     ${c.reading.dropped.map(q=>`<div class="quote dropped">${esc(q.field)}: ${esc(q.value)} "${esc(q.quote)}"</div><div class="small">dropped: quote not in the document</div>`).join("")}
+     <div class="small" style="margin-top:6px">timings: ${Object.entries(c.timings).map(([k,v])=>k+" "+v).join(" · ")}</div>
+    </div>
+   </div>`;
+  if(status==="HOLD"){
+    const go = async yes => {
+      const res = await post(`/api/requests/${c.id}/respond`, {approver:$("#appr").value, approve:yes});
+      if(!res.ok){ $("#ap-msg").innerHTML = `<div class="msg bad">${esc(res.reason)} <span class="mono">(${res.code})</span></div>`; }
+      else { await loadReqs(); show(c.id); }
+    };
+    $("#ap-yes").onclick = () => go(true); $("#ap-no").onclick = () => go(false);
+  }
+}
+
+// ---------------- sweep
+let swTimer = null;
+$("#sw-run").onclick = async () => {
+  const lim = parseInt($("#sw-limit").value) || null;
+  await post("/api/sweep", {limit: lim, fresh: $("#sw-fresh").checked});
+  if(!swTimer) swTimer = setInterval(pollSweep, 700);
+};
+async function pollSweep(){
+  const p = await api("/api/sweep/progress");
+  const pct = p.total ? 100*p.done/p.total : 0;
+  $("#sw-bar").style.width = pct+"%";
+  const secs = p.started ? (Date.now()/1000 - p.started) : 0;
+  $("#sw-status").textContent = p.running ? `${p.done} / ${p.total} files · ${p.pages} pages · ${(p.pages/Math.max(secs,0.1)*60).toFixed(0)} pages/min · ${p.model_calls} model calls · ${esc(p.current)}` : (p.run_id ? `finished ${p.run_id}` : "");
+  if(!p.running){ clearInterval(swTimer); swTimer = null; loadSweep(); }
+}
+async function loadSweep(){
+  const s = await api("/api/sweep/latest");
+  if(!s.stats){ $("#sw-tiles").innerHTML = `<div class="small">No sweep yet.</div>`; return; }
+  const t = s.stats;
+  $("#sw-tiles").innerHTML = [
+    [t.files, "files read"], [t.pages_per_min, "pages / min"], [t.resolved_without_model_pct+"%", "settled without the model"],
+    [t.controlled_open, "controlled files open to the wrong people"], [t.unmarked_copies, "unmarked copies of marked originals"],
+    [t.people_exposed, "people who can see what they shouldn't"], [t.model_calls, "vision-model calls"], [t.seconds+"s", "sweep time"]
+  ].map(([n,l])=>`<div class="tile"><div class="n">${n}</div><div class="l">${l}</div></div>`).join("");
+  $("#sw-top").innerHTML = s.top.map(i => `<tr>
+    <td class="mono">${esc(i.file.split("/").pop())}</td><td>${esc(i.folder)}</td>
+    <td><b>${i.jurisdiction}</b> p=${(+i.p).toFixed(2)}${i.detail.match?`<div class="small">copy of ${esc(i.detail.match)}</div>`:""}</td>
+    <td>${i.unmarked_copy==1?"<b>unmarked copy</b><br>":i.unmarked_copy>0?"<b>markings not verified</b><br>":""}${i.unauthorized?`${i.unauthorized} of ${i.readers} readers not authorized<div class="small">${i.detail.unauthorized.slice(0,4).map(u=>esc(u.name)+" ("+u.why+")").join(", ")}</div>`:""}</td>
+    <td><b>${(+i.exposure).toFixed(2)}</b></td>
+    <td>${i.quarantined?`<span class="small">moved</span>`:`<button class="btn" data-f="${esc(i.file)}">Restrict</button>`}</td></tr>`).join("");
+  document.querySelectorAll("#sw-top button").forEach(b => b.onclick = async () => {
+    await post("/api/sweep/quarantine", {run_id:s.run_id, file:b.dataset.f, actor:"dana.whitfield@kestrelprecision.example"});
+    loadSweep();
+  });
+}
+
+// ---------------- audit
+let brokenAt = null;
+async function loadAudit(){
+  const ev = await api("/api/audit?limit=150");
+  $("#au-rows").innerHTML = ev.map(e => `<tr class="${brokenAt && e.seq>=brokenAt?"broken":""}"><td>${e.seq}</td><td class="small">${e.ts.slice(11,19)}</td><td><b>${e.type}</b></td>
+    <td class="small">${esc((e.actor||"").split("@")[0])}</td><td class="mono">${esc(e.ref)}</td>
+    <td class="small">${esc(JSON.stringify(e.payload).slice(0,110))}</td><td class="mono">${e.hash.slice(0,10)}…</td></tr>`).join("");
+}
+$("#au-verify").onclick = async () => {
+  const v = await api("/api/audit/verify");
+  brokenAt = v.ok ? null : v.broken_at;
+  $("#au-msg").innerHTML = `<div class="msg ${v.ok?"ok":"bad"}">${esc(v.message)}</div>`;
+  loadAudit(); tick();
+};
+$("#au-tamper").onclick = async () => {
+  const t = await post("/api/demo/tamper", {});
+  $("#au-msg").innerHTML = `<div class="msg bad">${esc(t.message)}. Now press Verify chain.</div>`;
+};
+
+// ---------------- system
+const hist = [];
+async function tick(){
+  try{
+    const s = await api("/api/system");
+    const gpu = s.gpu && s.gpu.util_pct!=null ? s.gpu.util_pct : null;
+    hist.push({cpu:s.cpu_pct, gpu}); if(hist.length>120) hist.shift();
+    $("#p-meter").textContent = (gpu!=null?`GPU ${gpu}% · `:"")+`CPU ${s.cpu_pct.toFixed(0)}% · mem ${s.mem_used_gb}/${s.mem_total_gb} GB`;
+    $("#p-model").textContent = `model ${s.model.split("/").pop()} · ${s.llm.calls} calls`;
+    $("#sy-tiles").innerHTML = [[gpu!=null?gpu+"%":"n/a","GPU use"],[s.cpu_pct.toFixed(0)+"%","CPU use"],[s.mem_used_gb+" GB","memory used of "+s.mem_total_gb],
+      [s.llm.calls,"model calls"],[s.llm.completion_tokens,"tokens generated"],[s.llm.seconds?((s.llm.completion_tokens/s.llm.seconds)||0).toFixed(0):"0","tok/s per call (avg)"]]
+      .map(([n,l])=>`<div class="tile"><div class="n">${n}</div><div class="l">${l}</div></div>`).join("");
+    $("#sy-model").textContent = `${s.model}\n${s.model_url}\nreader: ${s.reader}`;
+    draw();
+  }catch(e){}
+  try{ const v = await api("/api/audit/verify"); const el=$("#p-chain"); el.textContent = v.ok?`log intact · ${v.checked} rows`:`log BROKEN at row ${v.broken_at}`; el.className = "pill "+(v.ok?"ok":"bad"); }catch(e){}
+}
+function draw(){
+  const cv = $("#sy-chart"), g = cv.getContext("2d"); g.clearRect(0,0,cv.width,cv.height);
+  g.strokeStyle="#e5e7eb"; for(let y=0;y<=4;y++){g.beginPath();g.moveTo(0,y*cv.height/4);g.lineTo(cv.width,y*cv.height/4);g.stroke();}
+  const line=(key,color)=>{g.strokeStyle=color;g.lineWidth=2;g.beginPath();hist.forEach((h,i)=>{const v=h[key];if(v==null)return;const x=i*cv.width/119,y=cv.height-(v/100)*cv.height;i?g.lineTo(x,y):g.moveTo(x,y);});g.stroke();};
+  line("cpu","#1d4ed8"); line("gpu","#d92d20");
+}
+$("#sy-egress").onclick = async () => {
+  const r = await post("/api/system/egress", {});
+  $("#sy-egress-msg").innerHTML = `<div class="msg ${r.blocked?"ok":"bad"}">${esc(r.message)}</div>`;
+  const el = $("#p-egress"); el.textContent = r.blocked ? "internet blocked" : "internet reachable"; el.className = "pill "+(r.blocked?"ok":"bad");
+};
+init();
+</script>
+</body>
+</html>
