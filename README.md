@@ -1,5 +1,8 @@
 # Embargo
 
+**Demo video (1:54, recorded on the Dell Pro Max GB10):** [media/embargo_demo.mp4](media/embargo_demo.mp4)
+
+
 **Keeps controlled files inside the building.** Embargo is a local AI export-control officer: it stops weapons blueprints from leaving a defense supplier, even when someone crops the label off first.
 
 Small defense machine shops send drawings to suppliers and customers every day. If one ITAR-controlled drawing reaches a foreign person without a license, that's a federal violation (Boeing settled for $51M in 2024, RTX for $200M). They can't paste the drawing into a cloud AI to check it, because uploading it *is* the leak. So Embargo runs on one box in the building (a Dell Pro Max with GB10), and the drawing never leaves.
