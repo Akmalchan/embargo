@@ -399,10 +399,27 @@ def demo_reset():
     return {"ok": True}
 
 
+_LIVE = {"t": 0.0, "ok": False}
+
+
+def _model_live() -> bool:
+    """Is a model server actually answering? Cached for 15 s; the console never claims a model that isn't running."""
+    import time as _t
+    import urllib.request
+    if _t.time() - _LIVE["t"] > 15:
+        try:
+            urllib.request.urlopen(SETTINGS.llm_base_url.rstrip("/") + "/models", timeout=1.5).read(200)
+            _LIVE["ok"] = True
+        except Exception:
+            _LIVE["ok"] = False
+        _LIVE["t"] = _t.time()
+    return _LIVE["ok"]
+
+
 @app.get("/api/system")
 def sys_meter():
     return system.meter() | {"model": SETTINGS.llm_model, "model_url": SETTINGS.llm_base_url,
-                             "reader": SETTINGS.reader}
+                             "reader": SETTINGS.reader, "model_live": _model_live()}
 
 
 @app.post("/api/system/egress")

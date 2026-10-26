@@ -39,8 +39,9 @@ def _post_ollama(messages, max_tokens, temperature, response_format):
         text = " ".join(p["text"] for p in m["content"] if p["type"] == "text")
         imgs = [p["image_url"]["url"].split(",", 1)[1] for p in m["content"] if p["type"] == "image_url"]
         msgs.append({"role": m["role"], "content": text, "images": imgs})
-    body = {"model": SETTINGS.llm_model, "messages": msgs, "stream": False, "think": False,
-            "options": {"temperature": temperature, "num_predict": max_tokens}}
+    gpt_oss = "gpt-oss" in SETTINGS.llm_model   # can't switch thinking off, only down; leave room for it
+    body = {"model": SETTINGS.llm_model, "messages": msgs, "stream": False, "think": "low" if gpt_oss else False,
+            "options": {"temperature": temperature, "num_predict": max_tokens + (800 if gpt_oss else 0)}}
     if response_format and response_format.get("type") == "json_schema":
         body["format"] = response_format["json_schema"]["schema"]
     base = SETTINGS.llm_base_url.rsplit("/v1", 1)[0]

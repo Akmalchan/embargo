@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Embargo · Intro</title>
+<style>
+  :root{--text:#ededed;--dim:#b5b5b5;--line:rgba(255,255,255,.14);--red:#f05252;--sans:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI","Ubuntu",Arial,sans-serif;--mono:"SF Mono",ui-monospace,"Ubuntu Mono","DejaVu Sans Mono",monospace;--ease:cubic-bezier(.2,.8,.2,1)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#050506;color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow:hidden;cursor:default}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:7vh 7vw;gap:4vh;opacity:0;visibility:hidden;}
+  .slide.on{opacity:1;visibility:visible}
+  .bg{position:absolute;inset:0;z-index:-1;overflow:hidden}
+  .bg img{width:100%;height:100%;object-fit:cover;filter:saturate(.75) contrast(1.05)}
+  @keyframes kb{from{transform:scale(1.02) translate(0,0)}to{transform:scale(1.14) translate(-2%,-1.5%)}}
+  .bg.paper img{filter:invert(1) brightness(.55) contrast(1.2)}
+  .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,5,6,.94) 0%,rgba(5,5,6,.78) 50%,rgba(5,5,6,.45) 100%),linear-gradient(0deg,rgba(5,5,6,.9),transparent 45%)}
+  .brand{position:fixed;top:4vh;left:7vw;display:flex;align-items:center;gap:.8rem;font-weight:650;letter-spacing:.32em;font-size:clamp(.9rem,1.2vw,1.25rem);z-index:5}
+  .brand svg{width:1.7em;height:1.7em;fill:#fff}
+  .tag{position:fixed;top:4.4vh;right:7vw;font-size:clamp(.7rem,.9vw,.95rem);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);z-index:5}
+  .eyebrow{font-size:clamp(.8rem,1.1vw,1.15rem);letter-spacing:.2em;text-transform:uppercase;font-weight:650;color:#9fd0ff}
+  .eyebrow.red{color:var(--red)}
+  h1{font-size:clamp(2.6rem,5.6vw,6.2rem);line-height:1.03;letter-spacing:-.04em;font-weight:750;max-width:18ch}
+  h1 .g{background:linear-gradient(90deg,#9fd0ff,#c8b4ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  h1 .r{color:var(--red)}
+  .lead{font-size:clamp(1.05rem,1.7vw,1.8rem);color:var(--dim);max-width:40ch;line-height:1.4}
+  .slide.on>*:nth-child(2){animation-delay:.12s}.slide.on>*:nth-child(3){animation-delay:.3s}.slide.on>*:nth-child(4){animation-delay:.5s}
+  .slide>.bg{opacity:1;transform:none;animation:none!important}
+  @keyframes in{to{opacity:1;transform:none}}
+  .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.3vw;max-width:88rem}
+  .card{border:1px solid var(--line);border-radius:16px;padding:2.6vh 1.6vw;background:rgba(18,18,20,.86)}
+  .card b{display:block;font:750 clamp(2.4rem,4.4vw,4.8rem) var(--mono);letter-spacing:-.04em;line-height:1}
+  .card b.r{color:var(--red)}.card b.g{color:#9fd0ff}.card b.w{color:#fff}
+  .card h3{font-size:clamp(1rem,1.5vw,1.55rem);margin-top:1.3vh;font-weight:650}
+  .card p{font-size:clamp(.85rem,1.1vw,1.15rem);color:var(--dim);margin-top:.7vh;line-height:1.45}
+  .src{position:fixed;bottom:4vh;left:7vw;font-size:clamp(.6rem,.75vw,.8rem);color:#7a7a7a;z-index:5}
+  .nav{position:fixed;bottom:4vh;right:7vw;display:flex;gap:.5rem;z-index:5}
+  .nav i{width:2.2rem;height:4px;border-radius:2px;background:rgba(255,255,255,.18);transition:background .4s}
+  .nav i.on{background:#fff}
+  .hint{position:fixed;bottom:4vh;left:50%;transform:translateX(-50%);font-size:.75rem;color:#6b6b6b;z-index:5}
+</style>
+</head>
+<body>
+  <div class="brand"><svg viewBox="0 0 54 54" aria-hidden="true"><rect x="4" y="6" width="46" height="8"/><rect x="4" y="23" width="30" height="8"/><rect x="40" y="23" width="10" height="8" opacity=".28"/><rect x="4" y="40" width="46" height="8"/></svg><span>EMBARGO</span></div>
+  <div class="tag">Dell Pro Max · NVIDIA GB10</div>
+
+  <section class="slide on">
+    <div class="bg"><img src="/static/img/deck_sweep.png" alt=""></div>
+    <div class="eyebrow">Export control, on the machine</div>
+    <h1>Controlled drawings <span class="g">never leave.</span><br>Even with the label cut off.</h1>
+    <p class="lead">A local AI compliance officer for defense machine shops. Email, uploads, USB and Slack all go through it.</p>
+  </section>
+
+  <section class="slide">
+    <div class="bg paper"><img src="/static/img/hero_blueprint.png" alt=""></div>
+    <div class="eyebrow red">The problem</div>
+    <h1>One email with a drawing is an <span class="r">illegal export.</span></h1>
+    <div class="cards">
+      <div class="card"><b class="r">$200M</b><h3>RTX, 2024</h3><p>The largest State Department export penalty ever. About 750 violations, including defense technical data sent to China.</p></div>
+      <div class="card"><b class="r">$51M</b><h3>Boeing, 2024</h3><p>199 violations, including controlled technical data shared with foreign-national employees and contractors.</p></div>
+      <div class="card"><b class="r">F-35</b><h3>Stolen by China</h3><p>Su Bin pleaded guilty in 2016 to helping steal F-35, F-22 and C-17 data from US defense contractors.</p></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="bg paper"><img src="/static/img/step_match.png" alt=""></div>
+    <div class="eyebrow">How it leaks</div>
+    <h1>Nobody checks <span class="g">what actually leaves.</span></h1>
+    <div class="cards">
+      <div class="card"><b class="w">Cropped</b><h3>Label cut off</h3><p>The ITAR banner and title block are cropped out, so keyword filters see nothing.</p></div>
+      <div class="card"><b class="w">Hidden</b><h3>Inside other files</h3><p>Pasted into a Word RFQ or a quote deck, zipped in a job folder, or named in a CNC program.</p></div>
+      <div class="card"><b class="w">Cloud</b><h3>Can't be used</h3><p>Sending the drawing to a cloud AI to check it can itself be the export.</p></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="bg"><img src="/static/img/deck_map.png" alt=""></div>
+    <div class="eyebrow">Embargo</div>
+    <h1>The AI reads. <span class="g">Plain code decides.</span><br>Nothing leaves this box.</h1>
+    <div class="cards">
+      <div class="card"><b class="g">Shape</b><h3>Recognises the drawing</h3><p>Matched against every controlled original, so a cropped or renamed copy is still caught.</p></div>
+      <div class="card"><b class="g">Rules</b><h3>Fixed, explainable</h3><p>Export rules and a two-person sign-off decide. Every decision is sealed in a tamper-proof log.</p></div>
+      <div class="card"><b class="g">Local</b><h3>On the GB10</h3><p>The AI model runs on the GB10's GPU, with no cloud calls. The OpenShell sandbox blocks the internet.</p></div>
+    </div>
+  </section>
+
+  <div class="src" id="src"></div>
+  <div class="hint" id="hint">← → or click to move · F11 full screen</div>
+  <div class="nav" id="nav"></div>
+<script>
+  const S = [...document.querySelectorAll(".slide")], nav = document.getElementById("nav");
+  const SRC = ["", "Sources: US State Dept. consent agreements with RTX (Aug 2024) and Boeing (Feb 2024); US Dept. of Justice, Su Bin plea (2016).", "", ""];
+  S.forEach(() => nav.append(document.createElement("i")));
+  let k = 0;
+  function show(n) {
+    k = Math.max(0, Math.min(S.length - 1, n));
+    S.forEach((s, i) => {
+      s.classList.toggle("on", i === k);
+    });
+    [...nav.children].forEach((d, i) => d.classList.toggle("on", i === k));
+    document.getElementById("src").textContent = SRC[k];
+    document.getElementById("hint").style.opacity = k ? 0 : 1;
+  }
+  addEventListener("keydown", e => {
+    if (["ArrowRight", " ", "PageDown", "Enter"].includes(e.key)) { e.preventDefault(); show(k + 1); }
+    if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) { e.preventDefault(); show(k - 1); }
+  });
+  addEventListener("click", e => show(e.clientX < innerWidth / 4 ? k - 1 : k + 1));
+  show(0);
+</script>
+</body>
+</html>

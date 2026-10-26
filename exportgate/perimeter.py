@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import random
 import re
 import threading
@@ -199,13 +200,15 @@ def ask(q: str, use_model: bool = True) -> dict:
 
     answer = "\n".join(facts)
     source = "from the log"
-    if use_model and SETTINGS.reader != "text":
+    # EG_ASK_LLM=1: answer with a local text model even when drawings are read without a vision model
+    if use_model and (SETTINGS.reader != "text" or os.environ.get("EG_ASK_LLM") == "1"):
         try:
-            answer = llm._post([{"role": "user", "content":
+            said = llm._post([{"role": "user", "content":
                 "You are Embargo, a compliance assistant. Answer the question in 2-3 plain sentences using ONLY these facts. "
                 "Do not add anything that is not in the facts.\n\nQUESTION: " + q + "\n\nFACTS:\n" + "\n".join(facts)}],
-                max_tokens=180, temperature=0.1) or answer
-            source = "local model, from the log"
+                max_tokens=180, temperature=0.1)
+            if said and said.strip():   # only credit the model when it actually answered
+                answer, source = said.strip(), "local model, from the log"
         except llm.LLMUnavailable:
             pass
     store.log("ASK", "officer", "", {"q": q[:200], "kind": kind, "cites": cites[:10]})

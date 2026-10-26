@@ -123,7 +123,7 @@ function go(view, push = true) {
   if (view === "how") buildHow();
   if (view === "map") loadMap();
   if (view === "audit") loadChain();
-  if (view === "sweep") loadSweepLatest();
+  if (view === "sweep") { loadSweepLatest(); requestAnimationFrame(wallDraw); }
   if (view === "machine") loadMachine();
 }
 $$(".rail button").forEach(b => b.onclick = () => go(b.dataset.view));
@@ -145,8 +145,9 @@ async function boot() {
   $("#g-sample").onchange = pick; pick();
   const sys = await api("/api/system");
   S.model = sys.model;
-  $("#c-model em").textContent = sys.model.split("/").pop().replace(/-?NVFP4/, "").replace(/\s*\(.*\)/, "") + " · local";
-  $("#c-model .dot").className = "dot ok";
+  $("#c-model em").textContent = sys.model_live ? sys.model.split("/").pop().replace(/-?NVFP4/, "").replace(/\s*\(.*\)/, "") + " · local"
+    : "none · rules + fingerprint";
+  $("#c-model .dot").className = sys.model_live ? "dot ok" : "dot warn";
   $("#bed").innerHTML = BED_EMPTY;
   await refreshKpis();
   await refreshTray();
@@ -408,11 +409,52 @@ function countUp(node, to, ms, dp, suffix = "") {
 
 /* =============================== SWEEP =============================== */
 const SW = {cells: [], i: 0, flagged: 0, files: 0, controlled: 0, calls: 0};
+// The wall: one cell per file on the share, drawn on a canvas sized so every file fits (10,000+ included)
+const WALL = {n: 0, st: null};
+const WCOL = {0: "#2a2a2a", 1: "#1d5c3a", 2: "#b9a6ff", 3: "#f05252"};
+function wallInit(n) {
+  WALL.n = n; WALL.st = new Uint8Array(n);
+  $("#wall").innerHTML = `<canvas></canvas><div class="wall-num"><b>0</b><span>of ${n.toLocaleString()} files read</span></div><div class="wall-exp"><b>0</b><span>exposed</span></div>`;
+  wallDraw();
+}
+function wallGeom() {
+  const box = $("#wall"), cv = box.querySelector("canvas");
+  const W = box.clientWidth, H = box.clientHeight;
+  if (!cv || !W || !H) return null;
+  const dpr = window.devicePixelRatio || 1;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const pad = 10, s = Math.max(2, Math.floor(Math.sqrt(((W - 2 * pad) * (H - 2 * pad)) / Math.max(1, WALL.n))));
+  const cols = Math.max(1, Math.floor((W - 2 * pad) / s));
+  return {ctx: cv.getContext("2d"), dpr, s, cols, pad, g: s >= 5 ? 1 : 0};
+}
+function wallCell(G, i) {
+  const c = WALL.st[i], x = G.pad + (i % G.cols) * G.s, y = G.pad + Math.floor(i / G.cols) * G.s, ctx = G.ctx;
+  ctx.save(); ctx.scale(G.dpr, G.dpr);
+  ctx.fillStyle = WCOL[c];
+  if (c === 3) { ctx.shadowColor = "#f05252"; ctx.shadowBlur = 8; }
+  ctx.fillRect(x, y, G.s - G.g, G.s - G.g);
+  ctx.restore();
+}
+function wallDraw() {
+  const G = wallGeom(); if (!G || !WALL.st) return;
+  G.ctx.clearRect(0, 0, G.ctx.canvas.width, G.ctx.canvas.height);
+  for (let i = 0; i < WALL.n; i++) if (WALL.st[i] !== 3) wallCell(G, i);
+  for (let i = 0; i < WALL.n; i++) if (WALL.st[i] === 3) wallCell(G, i);   // exposed on top, so their glow shows
+}
+function wallSet(i, c) {
+  if (!WALL.st || i >= WALL.n) return;
+  WALL.st[i] = c; const G = wallGeom(); if (G) wallCell(G, i);
+}
+function wallCount(files, exposed) {
+  const b = $("#wall .wall-num b"), e = $("#wall .wall-exp b");
+  if (b) b.textContent = files.toLocaleString();
+  if (e) e.textContent = exposed.toLocaleString();
+}
+window.addEventListener("resize", () => { if (WALL.n) wallDraw(); });
 function cls(ev) { return ev.exposure >= 0.3 ? "c3" : (ev.jurisdiction !== "EAR99" && ev.p >= 0.5) ? "c2" : "c1"; }
 function sweepStart(ev) {
   Object.assign(SW, {cells: [], i: 0, flagged: 0, files: 0, controlled: 0, calls: 0, total: ev.total});
-  const wall = $("#wall"); wall.innerHTML = "";
-  for (let k = 0; k < Math.min(ev.total, 2400); k++) { const c = el("i"); wall.append(c); SW.cells.push(c); }
+  wallInit(ev.total);
   $("#s-log").innerHTML = ""; $("#s-top").innerHTML = "";
   sweepStats();
   TH.onStart && TH.onStart(ev);
@@ -430,8 +472,8 @@ function sweepFile(ev) {
   const c = cls(ev);
   if (c === "c3") SW.flagged++;
   if (c !== "c1") SW.controlled++;
-  const cell = SW.cells[SW.i++];
-  if (cell) { cell.className = c + " flash"; setTimeout(() => cell.classList.remove("flash"), 220); }
+  wallSet(SW.i++, +c[1]);
+  if (SW.files % 5 === 0 || c === "c3") wallCount(SW.files, SW.flagged);
   logAppend($("#s-log"), logLine(ev.file, ev), 300);
   if (SW.files % 5 === 0) sweepStats();
   TH.onFile && TH.onFile(ev);
@@ -455,9 +497,10 @@ async function sweepDone(ev) {
 async function loadSweepLatest() {
   const s = await api("/api/sweep/latest?limit=12");
   if (!s.stats) { sweepStats(); return; }
-  if (!SW.files && !$("#wall").children.length) {
+  if (!SW.files && !WALL.n) {
     const cells = await api(`/api/sweep/cells?run_id=${s.run_id}`);
-    $("#wall").innerHTML = cells.map(c => `<i class="${c}"></i>`).join("");
+    wallInit(cells.length); cells.forEach((c, i) => { WALL.st[i] = +c[1]; }); wallDraw();
+    wallCount(cells.length, cells.filter(c => c === "c3").length);
     $("#s-prog").textContent = `last sweep · ${s.stats.files} files`;
   }
   if (!SW.files) sweepStats(s.stats);
@@ -1324,7 +1367,7 @@ const VIS = {
     return `<svg viewBox="0 0 560 300" class="vsvg">
       <rect x="20" y="30" width="300" height="240" rx="16" class="v-box"/><text x="40" y="60" class="v-cap">DELL PRO MAX &middot; NVIDIA GB10 &middot; 128 GB</text>
       <rect x="40" y="78" width="260" height="172" rx="10" class="v-sand"/><text x="56" y="100" class="v-cap dim">OPENSHELL SANDBOX</text>
-      ${[["Qwen3.6-35B &middot; vLLM", 116], ["Embargo engine", 160], ["NemoClaw agent", 204]].map(([t, y]) => `<rect x="56" y="${y}" width="228" height="34" rx="7" class="v-chip"/><text x="70" y="${y + 22}" class="v-chip-t">${t}</text>`).join("")}
+      ${[["Local AI model &middot; GPU", 116], ["Embargo engine", 160], ["NemoClaw agent", 204]].map(([t, y]) => `<rect x="56" y="${y}" width="228" height="34" rx="7" class="v-chip"/><text x="70" y="${y + 22}" class="v-chip-t">${t}</text>`).join("")}
       <path d="M300 120 H440" class="v-ln bad"/><g class="v-cut"><circle cx="372" cy="120" r="13"/><path d="M366 114 l12 12 M378 114 l-12 12"/></g>
       <text x="372" y="100" class="v-lbl bad">403 blocked</text>
       <circle cx="476" cy="120" r="30" class="v-net"/><text x="476" y="125" class="v-net-t">Internet</text>
@@ -1338,15 +1381,9 @@ const HOW = [
   {ph: "door", phase: "One door", v: "exits", title: "Every way out runs the same check",
    text: "Email, uploads, USB, Slack and the printer all go through one function. Email is a real mail server: blocked mail is refused by the server itself.",
    f: "check_outgoing(file, sender, recipient, channel) &rarr; SMTP 550 refused &middot; 250 held &middot; 250 delivered", m: ["5", "ways out, one check"]},
-  {ph: "noai", phase: "On this machine, no AI", v: "open", stage: 0, title: "Open anything",
-   text: "PDFs, scans, screenshots, Word and PowerPoint files, ZIPs (even a ZIP inside a ZIP) and CNC programs. Every drawing inside becomes the same clean picture, so it can be compared.",
-   f: "page &rarr; raster + text layer &nbsp;&middot;&nbsp; .docx/.pptx/.zip &rarr; every embedded picture &nbsp;&middot;&nbsp; .nc &rarr; G-code header text", m: ["18", "file types"]},
-  {ph: "noai", v: "fingerprint", stage: 1, title: "Recognise the drawing, not the label",
+  {ph: "noai", phase: "On this machine, no AI", v: "fingerprint", stage: 1, title: "Recognise the drawing, not the label",
    text: "Thousands of corner points are matched against all 60 controlled originals. A match only counts if the points line up and it clearly beats the runner-up. Cropping the label off doesn't help.",
    f: "I = inliers after RANSAC &nbsp;&middot;&nbsp; D = I<sub>best</sub> / max(I<sub>2nd</sub>, 20) &nbsp;&middot;&nbsp; strong &hArr; I &ge; 250 and D &ge; 3", m: ["7/7", "cropped copies caught"]},
-  {ph: "noai", v: "read", stage: 2, title: "Read the labels",
-   text: "It looks for export markings, categories, program names and part numbers, then checks each part number against the company's export register.",
-   f: "register lookup: exact &rarr; look-alike letters fixed (O&rarr;0, I&rarr;1) &rarr; one character off", m: ["3", "ways to match a part number"]},
   {ph: "noai", v: "tricks", stage: 2, title: "Catch the tricks",
    text: "A part number that only matches after fixing look-alike letters was changed on purpose. Text that talks to the AI is treated as an attack, never obeyed.",
    f: "normalize(pn) &isin; register, pn &notin; register &rArr; altered &nbsp;&middot;&nbsp; \"note to AI\", \"approve release\" &rArr; attack", m: ["15/15", "sneak attempts handled"]},
@@ -1359,15 +1396,9 @@ const HOW = [
   {ph: "rules", v: "rules", stage: 4, title: "Apply the export rules",
    text: "What the file is, crossed with who gets it, gives the answer. If anything couldn't be read, it fails safe and waits for a person.",
    f: "decision = most severe rule (Block &gt; Hold &gt; Release)", m: ["0", "leaks to the wrong people"]},
-  {ph: "rules", v: "people", stage: 5, title: "Two people, never one",
-   text: "Only the company's Empowered Official can release a held file, and never the person who sent it.",
-   f: "approve &hArr; held and approver is an Empowered Official and approver &ne; sender", m: ["4/4", "approval rules pass"]},
   {ph: "rules", v: "seal", stage: 5, title: "Seal every decision",
    text: "Each record is sealed to the one before it. Change an old record and the chain shows exactly where.",
    f: "seal<sub>n</sub> = SHA-256(seal<sub>n&minus;1</sub> + record<sub>n</sub>)", m: ["exact", "record of any edit found"]},
-  {ph: "night", phase: "Every night", v: "sweep", title: "Sweep the whole company share",
-   text: "At night it reads every file and finds controlled drawings sitting in folders the wrong people can open.",
-   f: "exposure = p &middot; weight &middot; (2 &times; share of wrong readers + label removed)", m: ["25/25", "planted problems found"]},
   {ph: "box", phase: "The box", v: "box", title: "Nothing can leave the machine",
    text: "The model, the engine and the NemoClaw agent all run on one GB10, inside an OpenShell sandbox that only lets Slack through.",
    f: "egress policy: deny everything, allow *.slack.com:443", m: ["0", "cloud calls"]},
@@ -1386,7 +1417,7 @@ function howArch() {
   s += `<path d="M${x0} ${by + bh / 2} H${x0 + 5 * gap}" class="a-flow"/>`;
   STAGES.forEach((t, i) => { const x = x0 + i * gap; s += `<g class="a-stage a-${["noai", "noai", "noai", "rules", "rules", "rules"][i]}" data-i="${i}"><rect x="${x}" y="${by}" width="${bw}" height="${bh}" rx="10" class="a-box st"/><text x="${x + 14}" y="${by + 27}" class="a-h">${t}</text><text x="${x + 14}" y="${by + 46}" class="a-s">${sub[i]}</text></g>`; });
   const lx = x0 + 2 * gap;
-  s += `<path d="M${lx + bw / 2} ${by + bh} V${by + bh + 26}" class="a-dash"/><rect x="${lx - 26}" y="${by + bh + 26}" width="${bw + 52}" height="44" rx="9" class="a-box mdl"/><text x="${lx - 12}" y="${by + bh + 45}" class="a-h">Qwen3.6-35B · vLLM</text><text x="${lx - 12}" y="${by + bh + 62}" class="a-s">reads, never decides</text>`;
+  s += `<path d="M${lx + bw / 2} ${by + bh} V${by + bh + 26}" class="a-dash"/><rect x="${lx - 26}" y="${by + bh + 26}" width="${bw + 52}" height="44" rx="9" class="a-box mdl"/><text x="${lx - 12}" y="${by + bh + 45}" class="a-h">Local AI model</text><text x="${lx - 12}" y="${by + bh + 62}" class="a-s">reads, never decides</text>`;
   s += `<text x="${x0}" y="${by - 14}" class="a-cap c-noai">NO AI</text><text x="${x0 + 3 * gap}" y="${by - 14}" class="a-cap c-rules">FIXED RULES</text>`;
   s += `<circle r="5" class="a-pulse" filter="url(#hglow)"><animateMotion dur="5s" repeatCount="indefinite" path="M${x0} ${by + bh / 2} H${x0 + 5 * gap + bw}"/></circle><circle r="3" fill="#fff"><animateMotion dur="5s" repeatCount="indefinite" path="M${x0} ${by + bh / 2} H${x0 + 5 * gap + bw}"/></circle>`;
   const ox = x0 + 5 * gap + bw;
